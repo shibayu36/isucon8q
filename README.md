@@ -101,3 +101,57 @@ ssh isucon@$IPADDR "source ~/.profile && source ~/.bashrc && cd /home/isucon/isu
 ```
 ./deploy.sh <IP>
 ```
+
+## nginxログ解析
+先にnginx.confの初期状態はgit管理しておくと良さそう。
+
+```
+scp isucon@<IP>:/etc/nginx/nginx.conf .
+git add nginx.conf
+git commit
+```
+
+変更をサーバに置きたいときは
+```
+scp nginx.conf root@<IP>:/etc/nginx/nginx.conf
+```
+
+nginx.confに以下を追加し、ログ出力。
+```
+    log_format ltsv "time:$time_local"
+                "\thost:$remote_addr"
+                "\tforwardedfor:$http_x_forwarded_for"
+                "\treq:$request"
+                "\tstatus:$status"
+                "\tmethod:$request_method"
+                "\turi:$request_uri"
+                "\tsize:$body_bytes_sent"
+                "\treferer:$http_referer"
+                "\tua:$http_user_agent"
+                "\treqtime:$request_time"
+                "\tcache:$upstream_http_x_cache"
+                "\truntime:$upstream_http_x_runtime"
+                "\tapptime:$upstream_response_time"
+                "\tvhost:$host";
+    access_log /var/log/nginx/access.log.tsv ltsv;
+```
+
+ログのクリア
+```
+sudo rm -f /var/log/nginx/access.log.tsv /var/log/nginx/error.log /var/log/nginx/access.log.tsv && sudo touch /var/log/nginx/access.log.tsv && sudo touch /var/log/nginx/error.log && sudo touch /var/log/nginx/access.log.tsv
+```
+
+ログ解析ツールのインストール
+```
+go get github.com/tkuchiki/alp
+```
+
+ログ解析実行
+```
+alp -r --sum -f /var/log/nginx/access.log.tsv
+```
+
+nginxのsyntax check
+```
+sudo nginx -t
+```
