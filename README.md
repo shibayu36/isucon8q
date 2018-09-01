@@ -35,6 +35,23 @@ SSH公開鍵コピペ用
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7C2s+kOm3eiUzIFIFuSD/SslYoE0sIUYx6tyiObc/orZvNBJGXdLWNxB7XVNuPl950aMw1qRi5uiylz25yS3YJLswMZJx85PqF0TqCcbgKFBs/qZBLM1X8VpifFfRP6V1OI9agdeMLA9fYKEp2YxWYWenQlm20jXNgoPtG0aPRfabxpZW3YDeSM9UuijVSGHqc7RNr9MtbvwHuvxMffBEOfLEli37LiqOdjpDXLQb4vAVKnlQsVBP6/nm8Sg5waQvxSAS75+XZKmaOaqGp3X/D+Kuqwpu0Y9eGwF/3ON+Us0o0avP8eJrOEkdZ1GNioeL+MVkkgkyEm3cM1BTSQID shibayu36@YukiShibasaki-no-MacBook-Pro.local
 ```
 
+## 初期状態のdump
+まず予選のrepositoryをforkして、自分のrepositoryに。コミット権にメンバーを追加。
+
+```
+cd /home/isucon/isubata/
+vim .git/config # 自分のoriginに変更
+git pull
+```
+
+ミドルウェア設定のdump
+```
+scp -r root@<IP>:/etc/nginx .
+scp -r root@<IP>:/etc/mysql .
+scp -r root@<IP>:/etc/systemd .
+# 他使っているミドルウェアあれば
+```
+
 ## systemd設定確認と再起動
 ```
 tree /etc/systemd
@@ -76,14 +93,6 @@ netstat -tnlp
 ```
 
 ## デプロイできるようにする
-まず予選のrepositoryをforkして、自分のrepositoryに。コミット権にメンバーを追加。
-
-```
-cd /home/isucon/isubata/
-vim .git/config # 自分のoriginに変更
-git pull
-```
-
 deploy.sh例
 ```
 #!/bin/bash
