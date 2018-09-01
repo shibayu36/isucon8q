@@ -103,7 +103,10 @@ USERNAME=$USER
 
 echo $BRANCH
 
-ssh isucon@$IPADDR "source ~/.profile && source ~/.bashrc && cd /home/isucon/isubata && git pull && cd webapp/go && make && sudo systemctl restart mysql && sudo systemctl restart nginx && sudo sudo systemctl enable isubata.golang.service && sudo sysctl -p"
+ssh isucon@$IPADDR "source ~/.profile && source ~/.bashrc && cd /home/isucon/isubata && git pull && cd webapp/go && make && sudo systemctl restart mysql && sudo systemctl restart nginx && sudo sudo systemctl restart isubata.golang.service && sudo sysctl -p"
+
+# perlならこういう感じ？
+# ssh isucon@$IPADDR "source ~/.profile && source ~/.bashrc && cd /home/isucon/isubata && git pull && ~/.local/perl/bin/carton install && sudo systemctl restart mysql && sudo systemctl restart nginx && sudo sudo systemctl restart isubata.golang.service && sudo sysctl -p"
 ```
 
 デプロイ
