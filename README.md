@@ -74,3 +74,30 @@ iostat -dx 1
 ```
 netstat -tnlp
 ```
+
+## デプロイできるようにする
+まず予選のrepositoryをforkして、自分のrepositoryに。コミット権にメンバーを追加。
+
+```
+cd /home/isucon/isubata/
+vim .git/config # 自分のoriginに変更
+git pull
+```
+
+deploy.sh例
+```
+#!/bin/bash
+set -ex
+IPADDR=$1
+BRANCH=`git symbolic-ref --short HEAD`
+USERNAME=$USER
+
+echo $BRANCH
+
+ssh isucon@$IPADDR "source ~/.profile && source ~/.bashrc && cd /home/isucon/isubata && git pull && cd webapp/go && make && sudo systemctl restart mysql && sudo service nginx restart && sudo sudo systemctl enable isubata.golang.service && sudo sysctl -p"
+```
+
+デプロイ
+```
+./deploy.sh <IP>
+```
