@@ -32,3 +32,29 @@ $ sudo systemctl start  isubata.golang.service
 $ sudo systemctl enable isubata.golang.service
 ```
 
+## サーバ状況確認
+プロセスツリー確認
+```
+ps auxf
+```
+
+ファイルシステム確認
+```
+df -Th
+```
+
+負荷確認
+```
+top -c
+# 1とタイプでCPUコアごとの利用率
+```
+
+ディスクI/O状況
+```
+iostat -dx 1
+```
+
+ネットワーク何がlistenされているか
+```
+netstat -tnlp
+```
