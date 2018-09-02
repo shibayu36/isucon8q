@@ -181,3 +181,57 @@ nginxのsyntax check
 ```
 sudo nginx -t
 ```
+
+## netdataでリソースモニタリング
+```
+bash <(curl -Ss https://my-netdata.io/kickstart.sh)
+```
+
+http://<IP>:19999/ でアクセス可能。
+
+完全に止めるには
+```
+sudo systemctl stop netdata.service
+sudo systemctl disable netdata.service
+```
+## systemlogを見る
+```
+sudo journalctl -f
+```
+
+## MySQLのクエリ解析
+my.cnfに以下を追記
+
+```
+[mysqld]
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/mysql-slow.log
+long_query_time = 0
+```
+
+pt-query-logで解析。https://www.percona.com/downloads/percona-toolkit/LATEST/
+```
+wget https://www.percona.com/downloads/percona-toolkit/3.0.11/binary/debian/stretch/x86_64/percona-toolkit_3.0.11-1.stretch_amd64.deb
+sudo apt install libio-socket-ssl-perl libdbd-mysql-perl libdbi-perl libnet-ssleay-perl
+sudo dpkg -i percona-toolkit_3.0.11-1.stretch_amd64.deb
+sudo pt-query-digest --limit 10 /var/log/mysql/mysql-slow.log
+```
+
+CentOSでインストールするなら
+```
+wget https://www.percona.com/downloads/percona-toolkit/3.0.11/binary/redhat/7/x86_64/percona-toolkit-3.0.11-1.el7.x86_64.rpm
+rpm -qpR percona-toolkit-3.0.11-1.el7.x86_64.rpm # 依存を見る
+# 依存をyumでインストール
+sudo rpm -ivh percona-toolkit-3.0.11-1.el7.x86_64.rpm
+```
+
+
+ログのパーミッション変だったら
+```
+sudo chmod 755 /var/log/mysql/
+```
+
+## 最後にやること
+- nginxのログ出ないように
+- MySQLのスロークエリログ出ないように
+- 再起動してベンチマークチェック
