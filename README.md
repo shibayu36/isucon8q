@@ -66,30 +66,39 @@ $ sudo systemctl enable isubata.golang.service
 ```
 
 ## サーバ状況確認
-プロセスツリー確認
+どういうミドルウェアが使われているか。プロセスツリー確認とLISTENの状況。
 ```
-ps auxf
+ps auxwf
+netstat -tnlp
+```
+
+CPU負荷確認
+```
+top -c
+# 1とタイプでCPUコアごとの利用率
+
+# または
+apt install htop
+htop
+```
+
+全体のリソース状況
+```
+apt install dstat
+dstat -t -a
+# CPUが
+```
+
+I/O状況
+```
+apt install sysstat
+iostat -dx 1
 ```
 
 ファイルシステム確認
 ```
 df -Th
 ```
-
-負荷確認
-```
-top -c
-# 1とタイプでCPUコアごとの利用率
-```
-
-ディスクI/O状況
-```
-iostat -dx 1
-```
-
-ネットワーク何がlistenされているか
-```
-netstat -tnlp
 ```
 
 ## デプロイできるようにする
