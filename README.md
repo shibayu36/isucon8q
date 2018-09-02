@@ -174,7 +174,7 @@ go get github.com/tkuchiki/alp
 
 ログ解析実行
 ```
-alp -r --sum -f /var/log/nginx/access.log.tsv
+alp -r --sum -f /var/log/nginx/access.log.tsv --aggregates='/channel/.*,/profile/.*,/history/.*'
 ```
 
 nginxのsyntax check
