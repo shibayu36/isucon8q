@@ -107,25 +107,19 @@ mysql> SELECT table_name, engine, table_rows, avg_row_length, floor((data_length
 ```
 
 ## デプロイできるようにする
-deploy.sh例
-```
-#!/bin/bash
-set -ex
-IPADDR=$1
-BRANCH=`git symbolic-ref --short HEAD`
-USERNAME=$USER
-
-echo $BRANCH
-
-ssh isucon@$IPADDR "source ~/.profile && source ~/.bashrc && cd /home/isucon/isubata && git pull && cd webapp/go && make && sudo systemctl restart mysql && sudo systemctl restart nginx && sudo sudo systemctl restart isubata.golang.service && sudo sysctl -p"
-
-# perlならこういう感じ？
-# ssh isucon@$IPADDR "source ~/.profile && source ~/.bashrc && cd /home/isucon/isubata && git pull && ~/.local/perl/bin/carton install && sudo systemctl restart mysql && sudo systemctl restart nginx && sudo sudo systemctl restart isubata.golang.service && sudo sysctl -p"
-```
+deploy.sh例: https://github.com/shibayu36/isucon7-qualify/blob/master/deploy.sh
 
 デプロイ
 ```
 ./deploy.sh <IP>
+```
+
+## ベンチマークを手元からできるように
+- https://github.com/shibayu36/isucon7-qualify/blob/master/bench.sh
+- https://github.com/shibayu36/isucon7-qualify/blob/master/bench-from-remote.sh
+
+```
+./bench-from-remote.sh <IP>
 ```
 
 ## nginxログ解析
@@ -194,6 +188,7 @@ http://<IP>:19999/ でアクセス可能。
 sudo systemctl stop netdata.service
 sudo systemctl disable netdata.service
 ```
+
 ## systemlogを見る
 ```
 sudo journalctl -f
@@ -231,7 +226,61 @@ sudo rpm -ivh percona-toolkit-3.0.11-1.el7.x86_64.rpm
 sudo chmod 755 /var/log/mysql/
 ```
 
+## pprofでgoのベンチマーク
+```
+sudo apt install graphviz
+go get -u github.com/google/pprof
+```
+
+https://golang.org/pkg/net/http/pprof/ のようにimportとmain関数でのListenAndServe。
+
+ベンチ実行中に、`go tool pprof http://localhost:6060/debug/pprof/profile?seconds=30`
+
+その後 `top50 -cum` でどの関数が遅いか、`list main.`でコードのどこが遅いかがわかる。
+
+## ベンチマークをリモートから実行するくん
+https://github.com/shibayu36/isucon7-qualify/blob/master/bench-from-remote.sh
+
+## nginxの設定参考
+- https://kazeburo.hatenablog.com/entry/2014/10/14/170129
+- http://blog.nomadscafe.jp/2013/09/benchmark-g-wan-and-nginx.html
+
+## MySQLの設定変更参考
+```
+innodb_buffer_pool_size = 1GB
+innodb_flush_log_at_trx_commit = 2
+innodb_flush_method = O_DIRECT
+```
+
+https://www.slideshare.net/kazeburo/mysql-casual7isucon p36
+
 ## 最後にやること
-- nginxのログ出ないように
-- MySQLのスロークエリログ出ないように
-- 再起動してベンチマークチェック
+nginxのログ出ないように
+
+```
+access_log  off;
+```
+
+MySQLのスロークエリログ出ないように
+```
+slow_query_log = 0
+```
+
+netdataを落とす
+
+```
+sudo systemctl stop netdata.service
+sudo systemctl disable netdata.service
+```
+
+pprof使わないように
+
+```
+# import _ "net/http/pprof"を消す
+# 以下を消す
+go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+```
+
+再起動してベンチマークチェック
