@@ -370,7 +370,7 @@ router ['DELETE'] => '/api/events/{id}/sheets/{rank}/{num}/reservation' => [qw/l
             return;
         }
 
-        $self->dbh->query('UPDATE reservations SET canceled_at = NOW() WHERE id = ?', $reservation->{id});
+        $self->dbh->query('UPDATE reservations SET canceled_at = ? WHERE id = ?', Time::Moment->now_utc->strftime('%F %T%f'), $reservation->{id});
         $txn->commit();
     };
     if ($@) {
