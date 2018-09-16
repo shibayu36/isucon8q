@@ -556,22 +556,40 @@ get '/admin/api/reports/sales' => [qw/admin_login_required/] => sub {
     my @reports;
 
     my $reservations = $self->dbh->select_all('SELECT r.*, s.rank AS sheet_rank, s.num AS sheet_num, s.price AS sheet_price, e.id AS event_id, e.price AS event_price FROM reservations r INNER JOIN sheets s ON s.id = r.sheet_id INNER JOIN events e ON e.id = r.event_id ORDER BY reserved_at ASC');
-    for my $reservation (@$reservations) {
-        my $report = {
-            reservation_id => $reservation->{id},
-            event_id       => $reservation->{event_id},
-            rank           => $reservation->{sheet_rank},
-            num            => $reservation->{sheet_num},
-            user_id        => $reservation->{user_id},
-            sold_at        => Time::Moment->from_string("$reservation->{reserved_at}Z", lenient => 1)->to_string(),
-            canceled_at    => $reservation->{canceled_at} ? Time::Moment->from_string("$reservation->{canceled_at}Z", lenient => 1)->to_string() : '',
-            price          => $reservation->{event_price} + $reservation->{sheet_price},
-        };
+    my @keys = qw/reservation_id event_id rank num price user_id sold_at canceled_at/;
+    my $body = join(',', @keys) . "\n";
 
-        push @reports => $report;
+    for my $reservation (@$reservations) {
+        $body .= join(
+            ',',
+            $reservation->{id},
+            $reservation->{event_id},
+            $reservation->{sheet_rank},
+            $reservation->{sheet_num},
+            $reservation->{event_price} + $reservation->{sheet_price},
+            $reservation->{user_id},
+            Time::Moment->from_string("$reservation->{reserved_at}Z", lenient => 1)->to_string(),
+            $reservation->{canceled_at} ? Time::Moment->from_string("$reservation->{canceled_at}Z", lenient => 1)->to_string() : '',
+        ) . "\n";
+        # my $report = {
+        #     reservation_id => $reservation->{id},
+        #     event_id       => $reservation->{event_id},
+        #     rank           => $reservation->{sheet_rank},
+        #     num            => $reservation->{sheet_num},
+        #     user_id        => $reservation->{user_id},
+        #     sold_at        => Time::Moment->from_string("$reservation->{reserved_at}Z", lenient => 1)->to_string(),
+        #     canceled_at    => $reservation->{canceled_at} ? Time::Moment->from_string("$reservation->{canceled_at}Z", lenient => 1)->to_string() : '',
+        #     price          => $reservation->{event_price} + $reservation->{sheet_price},
+        # };
+        # push @reports => $report;
     }
 
-    return $self->render_report_csv($c, \@reports);
+    my $res = $c->req->new_response(200, [
+        'Content-Type'        => 'text/csv; charset=UTF-8',
+        'Content-Disposition' => 'attachment; filename="report.csv"',
+    ], $body);
+    return $res;
+    # return $self->render_report_csv($c, \@reports);
 };
 
 sub render_report_csv {
