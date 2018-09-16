@@ -555,9 +555,10 @@ get '/admin/api/reports/sales' => [qw/admin_login_required/] => sub {
 
     my @reports;
 
-    my $reservations = $self->dbh->select_all('SELECT r.*, s.rank AS sheet_rank, s.num AS sheet_num, s.price AS sheet_price, e.id AS event_id, e.price AS event_price FROM reservations r INNER JOIN sheets s ON s.id = r.sheet_id INNER JOIN events e ON e.id = r.event_id ORDER BY reserved_at ASC');
+    my $reservations = $self->dbh->select_all('SELECT r.*, s.rank AS sheet_rank, s.num AS sheet_num, s.price AS sheet_price, e.id AS event_id, e.price AS event_price FROM reservations r INNER JOIN sheets s ON s.id = r.sheet_id INNER JOIN events e ON e.id = r.event_id ORDER BY reserved_at ASC FOR UPDATE');
     my @keys = qw/reservation_id event_id rank num price user_id sold_at canceled_at/;
-    my $body = join(',', @keys) . "\n";
+    my $body = "\0" x 15000000;
+    $body = join(',', @keys) . "\n";
 
     for my $reservation (@$reservations) {
         $body .= join(
