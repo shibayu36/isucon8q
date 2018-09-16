@@ -1,0 +1,49 @@
+.events {
+  padding: 1rem 2.5rem 0 1.5rem;
+}
+
+.events span.badge {
+  margin: .1rem;
+}
+
+#confirm-modal {
+  z-index: 9999 !important;
+  padding-top: 3rem;
+  background-color: rgba(0,0,0,0.6);
+}
+
+.event-modal-dialog .rank {
+  width: 2%;
+  font-size: .75rem;
+}
+
+.event-modal-dialog .remaining-sheets-bar {
+  width: 98%;
+}
+
+.event-modal-dialog .sheets-tables {
+  max-height: 24rem;
+  overflow: scroll;
+}
+
+.event-modal-dialog table {
+  font-size: 10px;
+}
+
+.event-modal-dialog table td {
+  padding: .5em;
+}
+
+.event-modal-dialog table tbody td {
+  text-align: center;
+}
+
+.event-modal-dialog table tbody td .mine {
+  color: #11FF33;
+}
+
+.my-page-modal-dialog .modal-body {
+  max-height: 30rem;
+  overflow: scroll;
+}
+

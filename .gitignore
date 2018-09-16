@@ -1,1 +1,7 @@
 /sokkyou/sokkyou-settings.sh
+/webapp/nodejs/node_modules/
+/webapp/perl/local/
+/webapp/php/vendor/
+/webapp/python/venv
+/webapp/ruby/.bundle/
+/webapp/go/vendor/
