@@ -9,6 +9,7 @@ REMOTE_LIST="isucon01 isucon02 isucon03"
 BACKEND="isucon01 isucon02 isucon03"
 BACKEND_APP="isucon01 isucon02"
 DB="isucon01"
+NGINX="isucon01 isucon02 isucon03"
 
 function SLACK() {
   curl -X POST --data-urlencode "payload={\"channel\": \"#ディメンジョナルハイソサイエティぬれねずみ\", \"username\": \"ぬれねずみ\", \"text\": \"$*\", \"icon_emoji\": \":mouse:\"}" $SLACK_WEBHOOK_URL
