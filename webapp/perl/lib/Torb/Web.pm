@@ -248,14 +248,16 @@ sub get_event {
         $event->{sheets}->{$rank}->{remains} = 0;
     }
 
-    my $sheets = $self->dbh->select_all('SELECT * FROM sheets ORDER BY `rank`, num');
+    my $sheets = $self->dbh->select_all('SELECT * FROM sheets ORDER BY `rank`, num');# TODO: ハードコード
+
+    my $reservations_by_sheet_ids = [ map { ($_->{sheet_id} => $_) } @{$self->dbh->select_row('SELECT * FROM reservations WHERE event_id = ? AND canceled_at IS NULL GROUP BY event_id, sheet_id HAVING reserved_at = MIN(reserved_at)', $event->{id})} ];
     for my $sheet (@$sheets) {
         $event->{sheets}->{$sheet->{rank}}->{price} ||= $event->{price} + $sheet->{price};
 
         $event->{total} += 1;
         $event->{sheets}->{$sheet->{rank}}->{total} += 1;
 
-        my $reservation = $self->dbh->select_row('SELECT * FROM reservations WHERE event_id = ? AND sheet_id = ? AND canceled_at IS NULL GROUP BY event_id, sheet_id HAVING reserved_at = MIN(reserved_at)', $event->{id}, $sheet->{id});
+        my $reservation = $reservations_by_sheet_ids->{$sheet->{id}};
         if ($reservation) {
             $sheet->{mine}        = JSON::XS::true if $login_user_id && $reservation->{user_id} == $login_user_id;
             $sheet->{reserved}    = JSON::XS::true;
