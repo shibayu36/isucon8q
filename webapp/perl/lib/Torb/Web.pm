@@ -350,7 +350,13 @@ router ['DELETE'] => '/api/events/{id}/sheets/{rank}/{num}/reservation' => [qw/l
     my $res;
     my $txn = $self->dbh->txn_scope();
     eval {
-        my $reservation_for_id = $self->dbh->select_row('SELECT * FROM reservations WHERE event_id = ? AND sheet_id = ? AND canceled_at IS NULL GROUP BY event_id HAVING reserved_at = MIN(reserved_at)', $event->{id}, $sheet->{id});
+        my $reservation_for_id = $self->dbh->select_row('SELECT * FROM reservations WHERE event_id = ? AND sheet_id = ? AND user_id = ? AND canceled_at IS NULL GROUP BY event_id HAVING reserved_at = MIN(reserved_at)', $event->{id}, $sheet->{id}, $user->{id});
+
+        unless ($reservation_for_id) {
+            $res = $self->res_error($c, not_reserved => 400);
+            $txn->rollback();
+            return;
+        }
         my $reservation = $self->dbh->select_row('SELECT * FROM reservations WHERE id = ? FOR UPDATE', $reservation_for_id->{id});
 
         unless ($reservation) {
