@@ -250,7 +250,7 @@ sub get_event {
 
     my $sheets = $self->dbh->select_all('SELECT * FROM sheets ORDER BY `rank`, num');# TODO: ハードコード
 
-    my $reservations_by_sheet_ids = [ map { ($_->{sheet_id} => $_) } @{$self->dbh->select_row('SELECT * FROM reservations WHERE event_id = ? AND canceled_at IS NULL GROUP BY event_id, sheet_id HAVING reserved_at = MIN(reserved_at)', $event->{id})} ];
+    my $reservations_by_sheet_ids = { map { ($_->{sheet_id} => $_) } @{$self->dbh->select_all('SELECT * FROM reservations WHERE event_id = ? AND canceled_at IS NULL GROUP BY event_id, sheet_id HAVING reserved_at = MIN(reserved_at)', $event->{id})} };
     for my $sheet (@$sheets) {
         $event->{sheets}->{$sheet->{rank}}->{price} ||= $event->{price} + $sheet->{price};
 
