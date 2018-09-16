@@ -21,3 +21,12 @@ sokkyou/sokkyou.shあたりのサーバリストを設定すると、デプロ�
 - アプリケーション: `./sokkyou/deploy.sh`
 - DB: `./sokkyou/deploy_mysql.sh`
 - nginx: `./sokkyou/deploy_nginx.sh`
+
+## プロファイルべんり君
+```perl
+my $now = Time::Moment->now;
+warn "profile: start @{[ $now->second ]} @{[ $now->millisecond ]}";
+
+$now = Time::Moment->now;
+warn "profile: hoge @{[ $now->second ]} @{[ $now->millisecond ]}";
+```
