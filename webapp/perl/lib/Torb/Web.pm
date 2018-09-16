@@ -350,7 +350,9 @@ router ['DELETE'] => '/api/events/{id}/sheets/{rank}/{num}/reservation' => [qw/l
     my $res;
     my $txn = $self->dbh->txn_scope();
     eval {
-        my $reservation = $self->dbh->select_row('SELECT * FROM reservations WHERE event_id = ? AND sheet_id = ? AND canceled_at IS NULL GROUP BY event_id HAVING reserved_at = MIN(reserved_at) FOR UPDATE', $event->{id}, $sheet->{id});
+        my $reservation_for_id = $self->dbh->select_row('SELECT * FROM reservations WHERE event_id = ? AND sheet_id = ? AND canceled_at IS NULL GROUP BY event_id HAVING reserved_at = MIN(reserved_at)', $event->{id}, $sheet->{id});
+        my $reservation = $self->dbh->select_row('SELECT * FROM reservations WHERE id = ? FOR UPDATE', $reservation_for_id->{id});
+
         unless ($reservation) {
             $res = $self->res_error($c, not_reserved => 400);
             $txn->rollback();
@@ -547,7 +549,7 @@ get '/admin/api/reports/sales' => [qw/admin_login_required/] => sub {
 
     my @reports;
 
-    my $reservations = $self->dbh->select_all('SELECT r.*, s.rank AS sheet_rank, s.num AS sheet_num, s.price AS sheet_price, e.id AS event_id, e.price AS event_price FROM reservations r INNER JOIN sheets s ON s.id = r.sheet_id INNER JOIN events e ON e.id = r.event_id ORDER BY reserved_at ASC FOR UPDATE');
+    my $reservations = $self->dbh->select_all('SELECT r.*, s.rank AS sheet_rank, s.num AS sheet_num, s.price AS sheet_price, e.id AS event_id, e.price AS event_price FROM reservations r INNER JOIN sheets s ON s.id = r.sheet_id INNER JOIN events e ON e.id = r.event_id ORDER BY reserved_at ASC');
     for my $reservation (@$reservations) {
         my $report = {
             reservation_id => $reservation->{id},
