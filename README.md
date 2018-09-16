@@ -9,6 +9,9 @@ http://isucon.net/archives/52193980.html
 * 予選問題に使われる OS は CentOS を予定
 
 ## デプロイ
+
+sokkyou/sokkyou.shあたりのサーバリストを設定すると、デプロイ先変えられます
+
 - アプリケーション: `./sokkyou/deploy.sh`
 - DB: `./sokkyou/deploy_mysql.sh`
 - nginx: `./sokkyou/deploy_nginx.sh`
