@@ -576,12 +576,11 @@ get '/admin/api/reports/sales' => [qw/admin_login_required/] => sub {
 
 sub render_report_csv {
     my ($self, $c, $reports) = @_;
-    my @reports = sort { $a->{sold_at} cmp $b->{sold_at} } @$reports;
 
     my @keys = qw/reservation_id event_id rank num price user_id sold_at canceled_at/;
     my $body = join ',', @keys;
     $body .= "\n";
-    for my $report (@reports) {
+    for my $report (@$reports) {
         $body .= join ',', @{$report}{@keys};
         $body .= "\n";
     }
