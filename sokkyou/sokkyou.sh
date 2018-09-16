@@ -4,10 +4,10 @@ set -eux
 source ./sokkyou/sokkyou-settings.sh
 
 SLACK_WEBHOOK_URL=$SLACK_WEBHOOK_URL
-REMOTE="isucon@$ISUCON01"
-REMOTE_LIST="$ISUCON01 $ISUCON02 $ISUCON03"
-BACKEND="$ISUCON01 $ISUCON02 $ISUCON03"
-BACKEND_APP="$ISUCON01 $ISUCON02"
+REMOTE="isucon@isucon01"
+REMOTE_LIST="isucon01 isucon02 isucon03"
+BACKEND="isucon01 isucon02 isucon03"
+BACKEND_APP="isucon01 isucon02"
 
 function SLACK() {
   curl -X POST --data-urlencode "payload={\"channel\": \"#ディメンジョナルハイソサイエティぬれねずみ\", \"username\": \"ぬれねずみ\", \"text\": \"$*\", \"icon_emoji\": \":mouse:\"}" $SLACK_WEBHOOK_URL
