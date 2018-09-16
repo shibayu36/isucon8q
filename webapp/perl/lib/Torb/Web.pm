@@ -10,6 +10,7 @@ use DBIx::Sunny;
 use Plack::Session;
 use Time::Moment;
 use File::Spec;
+use List::Util qw(first shuffle);
 
 filter login_required => sub {
     my $app = shift;
@@ -302,7 +303,7 @@ post '/api/events/{id}/actions/reserve' => [qw/allow_json_request login_required
     my $sheet;
     my $reservation_id;
     while (1) {
-        $sheet = $self->dbh->select_row('SELECT * FROM sheets WHERE id NOT IN (SELECT sheet_id FROM reservations WHERE event_id = ? AND canceled_at IS NULL FOR UPDATE) AND `rank` = ? ORDER BY RAND() LIMIT 1', $event->{id}, $rank);
+        $sheet = [ shuffle @{ $self->dbh->select_all('SELECT * FROM sheets WHERE id NOT IN (SELECT sheet_id FROM reservations WHERE event_id = ? AND canceled_at IS NULL FOR UPDATE) AND `rank` = ?', $event->{id}, $rank) } ]->[0];
         return $self->res_error($c, sold_out => 409) unless $sheet;
 
         my $txn = $self->dbh->txn_scope();
