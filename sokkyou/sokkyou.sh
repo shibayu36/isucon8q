@@ -7,7 +7,6 @@ SLACK_WEBHOOK_URL=$SLACK_WEBHOOK_URL
 REMOTE="isucon@isucon01"
 REMOTE_LIST="isucon01 isucon02 isucon03"
 BACKEND="isucon01 isucon02 isucon03"
-BACKEND_APP="isucon01 isucon02 isucon03"
 DB="isucon01"
 NGINX="isucon03"
 
