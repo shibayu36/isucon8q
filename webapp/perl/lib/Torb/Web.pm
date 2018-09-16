@@ -235,6 +235,8 @@ sub get_events {
     return @events;
 }
 
+my $sheets;
+
 sub get_event {
     my ($self, $event_id, $login_user_id) = @_;
 
@@ -249,10 +251,11 @@ sub get_event {
         $event->{sheets}->{$rank}->{remains} = 0;
     }
 
-    my $sheets = $self->dbh->select_all('SELECT * FROM sheets ORDER BY `rank`, num');# TODO: ハードコード
+    $sheets ||= $self->dbh->select_all('SELECT * FROM sheets ORDER BY `rank`, num');# TODO: ハードコード
 
     my $reservations_by_sheet_ids = { map { ($_->{sheet_id} => $_) } @{$self->dbh->select_all('SELECT * FROM reservations WHERE event_id = ? AND canceled_at IS NULL GROUP BY event_id, sheet_id HAVING reserved_at = MIN(reserved_at)', $event->{id})} };
-    for my $sheet (@$sheets) {
+    for my $_sheet (@$sheets) {
+        my $sheet = { %$_sheet };
         $event->{sheets}->{$sheet->{rank}}->{price} ||= $event->{price} + $sheet->{price};
 
         $event->{total} += 1;
