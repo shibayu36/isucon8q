@@ -1,7 +1,9 @@
 #!/bin/bash
 set -eux
 
-source ./sokkyou/sokkyou-settings.sh
+if [ -e ./sokkyou/sokkyou-settings.sh ]; then
+  source ./sokkyou/sokkyou-settings.sh
+fi
 
 SLACK_WEBHOOK_URL=$SLACK_WEBHOOK_URL
 REMOTE="isucon@isucon01"
